@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
+    ></script>
+
+    <script src="{{ url_for('static', filename='script/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='script/moment.js') }}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='stylesheets/style.css') }}"
+    />
+
+    <title>FLASK</title>
+
+    <!-- handle bar templates  -->
+    {% raw %}
+    <!-- login form handlebar  -->
+    <script id="login_form_handlebar" type="text/x-handlebars-template">
+      <h1>
+        WELCOME TO FLACK!
+      </h1>
+      <p>
+        Please login and chat we others!
+      </p>
+      <form id="login_form">
+        <label for="name">
+          Your name
+        </label>
+        <input
+          autocomplete="off"
+          autofocus
+          class="form-control"
+          name="username"
+          id="username"
+          placeholder="Username"
+          type="text"
+          required
+        />
+        <small class="form-text text-muted ml-auto">
+          Type your id for the chat
+        </small>
+        <button type="submit" class="btn btn-primary mt-2">
+          Submit
+        </button>
+      </form>
+    </script>
+
+    <!-- username handblebar  -->
+    <script id="username_handlebar" type="text/x-handlebars-template">
+      <hr style="border: solid white 1px" />
+      <div class="mt-3">
+        <h3>
+          Welcome
+          <span class="badge badge-pill badge-success">
+            {{username}}
+          </span>
+          !
+        </h3>
+      </div>
+    </script>
+
+    <!-- error message handblebar  -->
+    <script id="error_handlebar" type="text/x-handlebars-template">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>
+          {{message}}
+        </strong>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">
+            &times;
+          </span>
+        </button>
+      </div>
+    </script>
+
+    <!-- nametag handblebar  -->
+    <script id="name_tag_handlebar" type="text/x-handlebars-template">
+      {{#each usernames}}
+        <div class="toast" role="alert">
+          <div class="toast-header">
+            <span></span>
+            <strong class="mr-auto">
+              {{this}}
+            </strong>
+            <small class="text-muted">
+              Online
+            </small>
+          </div>
+        </div>
+      {{/each}}
+    </script>
+
+    <!-- nametag handblebar for single  -->
+    <script
+      id="name_tag_template_for_single_handlebar"
+      type="text/x-handlebars-template"
+    >
+      <div class="toast-header">
+        <span></span>
+        <strong class="mr-auto">
+          {{username}}
+        </strong>
+        <small class="text-muted">
+          Online
+        </small>
+      </div>
+    </script>
+
+    <!-- channel view handblebar  -->
+    <script id="channel_view_handlebar" type="text/x-handlebars-template">
+      <div class="channel_view py-3 px-3">
+        <h3>
+          <span class="badge badge-pill badge-info">
+            {{channelName}}
+          </span>
+        </h3>
+        <hr style="border: white solid 1px;" />
+        <p style="text-align: center">
+          -- Created On {{channelTime}} --
+        </p>
+
+        <form id="msg_form">
+          <input
+            autocomplete="off"
+            autofocus
+            class="form-control"
+            name="msg_contents"
+            id="msg_contents"
+            placeholder="Enter a message"
+            type="text"
+            required
+          />
+          <button type="submit" class="btn btn-primary mt-2">
+            Send
+          </button>
+        </form>
+
+        <div id="msg_container">
+          <ul id="msg"></ul>
+        </div>
+      </div>
+    </script>
+
+    <!-- channel list handblebar -->
+    <script
+      id="channel_list_template_handlebar"
+      type="text/x-handlebars-template"
+    >
+      <strong>
+        Channels
+      </strong>
+      <div class="list-group">
+        {{#each names}}
+          <button
+            type="button"
+            id="each_channel"
+            class="list-group-item list-group-item-action"
+            data-rm="{{this}}"
+          >
+            {{this}}
+          </button>
+        {{/each}}
+      </div>
+    </script>
+
+    <!--button handlebar-->
+    <script id="button_handlebar" type="text/x-handlebars-template">
+      <a
+        class="btn btn-outline-primary"
+        id="create_channel_button"
+        data-toggle="modal"
+        data-target="#create_channel_modal"
+      >
+        Create a new Channel
+      </a>
+
+      <a class="btn btn-outline-danger ml-auto" id="logout">
+        exit
+      </a>
+    </script>
+
+    <!-- channel message handblebar -->
+    <script id="channel_messages_handlebar" type="text/x-handlebars-template">
+      <li class="{{className}}">
+        <strong>
+          {{msg_sender}}
+        </strong>
+        <small class="text-muted" id="others_message_time">
+          {{msg_time}}
+        </small>
+        <p>
+          {{msg_contents}}
+        </p>
+      </li>
+    </script>
+    {%endraw%}
+  </head>
+
+  <body>
+    <div class="container-fluid h-100">
+      <!--sidebar-->
+      <div class="row h-100">
+        <aside class="col-12 col-md-2 p-0 bg-dark fixed-top">
+          <nav
+            class="navbar navbar-expand navbar-dark bg-dark flex-md-column flex-row align-items-start py-2"
+          >
+            <div class="collapse navbar-collapse align-items-start">
+              <ul
+                class="flex-md-column flex-row navbar-nav w-100 justify-content-between"
+              >
+                <li class="nav-item">
+                  <a class="nav-link pl-0 text-nowrap" href="/">
+                    <span class="font-weight-bold">FLACK</span>
+                  </a>
+                </li>
+                <!-- Where user list goes -->
+                {% block userlist %} {% endblock %}
+              </ul>
+            </div>
+          </nav>
+        </aside>
+
+        <div class="col offset-md-2 bg-faded py-3" id="DOM_placement">
+          <!-- Where create channel and logout buttons goes-->
+          {% block button%}{% endblock%}
+
+          <!-- Where channel lists & chat room goes-->
+          {% block channel %}{% endblock %}
+
+          <!-- Where other forms gose-->
+          {% block forms %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+<!-- where userlist populates-->
+{%block userlist %}
+<div id="userlist_placement"></div>
+{% endblock userlist %}
+
+<!-- where create channel and logout buttons populate-->
+{% block button %}
+<div class="row px-5" id="buttons_placement"></div>
+<div id="username_placement"></div>
+<div id="error_message_placement"></div>
+{% endblock %} {% block channel %}
+<div class="row">
+  <!--Channel list-->
+  <div id="channel_list_placement" class="channel_list col-3 px-3 mt-5"></div>
+  <!--Channel view-->
+  <div
+    id="channel_view_placement"
+    class="col-lg-9 col-md-10 col-sm-12 py-3"
+  ></div>
+</div>
+{% endblock channel %} {% block forms %}
+<!-- login form -->
+<div id="login_form_placement"></div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="create_channel_modal"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="create_channel_modal_lable">
+          Create a new channel
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="channel_form">
+        <div class="form-group">
+          <div class="modal-body">
+            <input
+              autocomplete="off"
+              autofocus
+              class="form-control"
+              name="channel_name"
+              id="channel_name"
+              placeholder="Please end a channel name"
+              type="text"
+              required
+            />
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary form-control">
+                Create a channel
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
